@@ -1,0 +1,60 @@
+Comment !
+	Program:    BubbleSort2                  (BSort2.asm)
+	Student:     Bryan Oliande
+	Date Due:        4/16/15
+	Class:       CSCI 241
+	Instructor:  Mr. Ding
+	Description:  This program sorts an array of signed integers, using 
+ the Bubble sort algorithm. The main program is in B_main.asm.
+
+ Rewrite a procedure named BubbleSort2 to improve the textbook sample BubbleSort,
+
+	Use a register as the exchange flag that is set to 1 whenever a pair of values is 
+	exchanged within the inner loop. Use this flag to exit the sort 
+   before its normal completion if you discover that no exchanges took place 
+   during a complete pass through the array
+
+!
+
+
+INCLUDE Irvine32.inc
+
+.code
+;----------------------------------------------------------
+BubbleSort2 PROC USES eax ecx esi edx,
+	pArray:PTR DWORD,		; pointer to array
+	Count:DWORD			; array size
+;
+; Sort an array of 32-bit signed integers in ascending order
+; using the bubble sort algorithm.
+;using EDX as the exchange flag
+; Receives: pointer to array, array size
+; Returns: nothing
+;-----------------------------------------------------------
+
+	mov ecx,Count
+	dec ecx			; decrement count by 1
+
+L1:	push ecx			; save outer loop count
+	mov esi,pArray		; point to first value
+	mov edx,0		;clearing exchange flag
+
+L2:	mov eax,[esi]		; get array value
+	cmp [esi+4],eax	; compare a pair of values
+	jge L3			; if [esi] <= [edi], don't exch
+	xchg eax,[esi+4]	; exchange the pair
+	mov edx,1			;xchg took place, set flag
+	mov [esi],eax
+
+L3:	add esi,4		; move both pointers forward
+	loop L2		; inner loop
+
+	pop ecx		; retrieve outer loop count
+	cmp edx,0	;edx=0 implies no exchanges took place during a complete pass, exit procedure
+	je L4
+	loop L1		; else repeat outer loop
+
+L4:	ret
+BubbleSort2 ENDP
+
+END
